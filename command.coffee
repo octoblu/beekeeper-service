@@ -8,6 +8,9 @@ class Command
       meshbluConfig:  new MeshbluConfig().toJSON()
       port:           process.env.PORT || 80
       disableLogging: process.env.DISABLE_LOGGING == "true"
+      mongodbUri:     process.env.MONGODB_URI
+      redisNamespace: process.env.REDIS_NAMESPACE || 'beekeeper'
+      redisUri:       process.env.REDIS_URI
     }
 
   panic: (error) =>
@@ -15,9 +18,9 @@ class Command
     process.exit 1
 
   run: =>
-    # Use this to require env
-    # @panic new Error('Missing required environment variable: ENV_NAME') if _.isEmpty @serverOptions.envName
-    @panic new Error('Missing meshbluConfig') if _.isEmpty @serverOptions.meshbluConfig
+    @panic new Error('Missing required environment variable: MONGODB_URI') if _.isEmpty @serverOptions.mongodbUri
+    @panic new Error('Missing required environment variable: REDIS_URI') if _.isEmpty @serverOptions.redisUri
+    # @panic new Error('Missing meshbluConfig') if _.isEmpty @serverOptions.meshbluConfig
 
     server = new Server @serverOptions
     server.run (error) =>

@@ -1,13 +1,13 @@
-BeekeeperController = require './controllers/beekeeper-controller'
+WebhookController = require './controllers/webhook-controller'
 
 class Router
-  constructor: ({@beekeeperService}) ->
-    throw new Error 'Missing beekeeperService' unless @beekeeperService?
+  constructor: ({@webhookService}) ->
+    throw new Error 'Missing webhookService' unless @webhookService?
 
   route: (app) =>
-    beekeeperController = new BeekeeperController {@beekeeperService}
+    webhookController = new WebhookController {@webhookService}
 
-    app.get '/hello', beekeeperController.hello
-    # e.g. app.put '/resource/:id', someController.update
+    app.post '/webhooks/:type', webhookController.create
+    app.post '/webhooks/:type/:owner_name/:repo_name', webhookController.create
 
 module.exports = Router
