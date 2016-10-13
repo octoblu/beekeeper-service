@@ -1,13 +1,14 @@
-enableDestroy      = require 'server-destroy'
-octobluExpress     = require 'express-octoblu'
-express            = require 'express'
-MeshbluAuth        = require 'express-meshblu-auth'
-Router             = require './router'
-WebhookService     = require './services/webhook-service'
-debug              = require('debug')('beekeeper-service:server')
-mongojs            = require 'mongojs'
-Redis              = require 'ioredis'
-RedisNS            = require '@octoblu/redis-ns'
+enableDestroy     = require 'server-destroy'
+octobluExpress    = require 'express-octoblu'
+express           = require 'express'
+MeshbluAuth       = require 'express-meshblu-auth'
+Router            = require './router'
+WebhookService    = require './services/webhook-service'
+DeploymentService = require './services/deployment-service'
+debug             = require('debug')('beekeeper-service:server')
+mongojs           = require 'mongojs'
+Redis             = require 'ioredis'
+RedisNS           = require '@octoblu/redis-ns'
 
 class Server
   constructor: (options={})->
@@ -41,8 +42,9 @@ class Server
     client = new Redis @redisUri, dropBufferSupport: true
     redis = new RedisNS @redisNamespace, client
 
+    deploymentService = new DeploymentService { db }
     webhookService = new WebhookService { redis }
-    router = new Router { webhookService }
+    router = new Router { deploymentService, webhookService }
 
     router.route app
 
