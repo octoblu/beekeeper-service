@@ -1,6 +1,26 @@
 class DeploymentService
-  constructor: ({@db}) ->
+  constructor: ({ @db, @redis }) ->
     @datastore = @db.deployments
+
+  create: ({ owner_name, repo_name, tag }, callback) =>
+    record = {
+      created_at: new Date()
+      owner_name
+      repo_name
+      tag
+    }
+
+    @datastore.insert record, (error) =>
+      return callback error if error?
+      type = 'deployment:create'
+      body = {
+        owner_name
+        repo_name
+        tag
+      }
+
+      data = JSON.stringify { type, body, owner_name, repo_name }
+      @redis.lpush 'webhooks', data, callback
 
   getLatest: ({ owner_name, repo_name }, callback) =>
     query =

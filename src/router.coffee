@@ -11,6 +11,7 @@ class Router
     deploymentController = new DeploymentController {@deploymentService}
 
     app.get '/deployments/:owner_name/:repo_name/latest', deploymentController.getLatest
+    app.post '/deployments/:owner_name/:repo_name/:tag', deploymentController.create
 
     app.post '/webhooks/:type', webhookController.create
     app.post '/webhooks/:type/:owner_name/:repo_name', webhookController.create

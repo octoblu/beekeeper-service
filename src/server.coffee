@@ -42,7 +42,7 @@ class Server
     client = new Redis @redisUri, dropBufferSupport: true
     redis = new RedisNS @redisNamespace, client
 
-    deploymentService = new DeploymentService { db }
+    deploymentService = new DeploymentService { db, redis }
     webhookService = new WebhookService { redis }
     router = new Router { deploymentService, webhookService }
 
