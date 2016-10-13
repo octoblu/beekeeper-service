@@ -5,6 +5,10 @@ class WebhookController
   create: (req, res) =>
     { type, owner_name, repo_name } = req.params
     body = req.body
+    try
+      body = JSON.parse body
+    catch error
+
     @webhookService.create { type, body, owner_name, repo_name }, (error) =>
       return res.sendError(error) if error?
       res.status(201).end()
