@@ -9,6 +9,13 @@ class DeploymentController
       return res.sendError(error) if error?
       res.status(201).end()
 
+  getByTag: (req, res) =>
+    { owner_name, repo_name, tag } = req.params
+
+    @deploymentService.getByTag { owner_name, repo_name, tag }, (error, deployment) =>
+      return res.sendError(error) if error?
+      res.status(200).send(deployment)
+
   getLatest: (req, res) =>
     { owner_name, repo_name } = req.params
 

@@ -8,7 +8,7 @@ enableDestroy = require 'server-destroy'
 Server        = require '../../src/server'
 mongojs       = require 'mongojs'
 
-describe 'Get Latest Deployment', ->
+describe 'Get Deployment', ->
   beforeEach (done) ->
     db = mongojs 'test-beekeeper-service', ['deployments']
     @deployments = db.deployments
@@ -42,14 +42,14 @@ describe 'Get Latest Deployment', ->
     @meshblu.destroy()
     @server.destroy()
 
-  describe 'On GET /deployments/:owner_name/:repo_name/latest', ->
+  describe 'On GET /deployments/:owner_name/:repo_name/:tag', ->
     context 'when a deployment exists', ->
       beforeEach (done) ->
         record =
           owner_name: 'the-owner'
           repo_name: 'the-service'
-          docker_url: 'the-owner/the-service:v1.0.0'
-          ci_passing: true
+          tag: 'v1.0.0'
+          ci_passing: false
           created_at: new Date()
           some_deployment: 1.87
 
@@ -57,7 +57,7 @@ describe 'Get Latest Deployment', ->
 
       beforeEach (done) ->
         options =
-          uri: '/deployments/the-owner/the-service/latest'
+          uri: '/deployments/the-owner/the-service/v1.0.0'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
 
@@ -73,7 +73,7 @@ describe 'Get Latest Deployment', ->
     context 'when a deployment does not exist', ->
       beforeEach (done) ->
         options =
-          uri: '/deployments/the-owner/the-service/latest'
+          uri: '/deployments/the-owner/the-service/v3.4.5'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
 

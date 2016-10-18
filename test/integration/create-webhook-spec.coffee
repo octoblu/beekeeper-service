@@ -1,3 +1,7 @@
+{afterEach, beforeEach, describe, it} = global
+{expect}      = require 'chai'
+sinon         = require 'sinon'
+
 shmock        = require 'shmock'
 request       = require 'request'
 enableDestroy = require 'server-destroy'
@@ -43,8 +47,6 @@ describe 'Webhooks', ->
 
   describe 'On POST /webhooks/beekeeper.io', ->
     beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
-
       options =
         uri: '/webhooks/beekeeper.io'
         baseUrl: "http://localhost:#{@serverPort}"
@@ -66,8 +68,6 @@ describe 'Webhooks', ->
 
   describe 'On POST /webhooks/something/foo/blah', ->
     beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
-
       options =
         uri: '/webhooks/something:else/foo/blah'
         baseUrl: "http://localhost:#{@serverPort}"
@@ -91,8 +91,6 @@ describe 'Webhooks', ->
 
   describe 'On POST with payload', ->
     beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
-
       options =
         uri: '/webhooks/something:else/foo/blah'
         baseUrl: "http://localhost:#{@serverPort}"

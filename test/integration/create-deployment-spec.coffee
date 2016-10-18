@@ -1,4 +1,7 @@
-_             = require 'lodash'
+{afterEach, beforeEach, describe, it} = global
+{expect}      = require 'chai'
+sinon         = require 'sinon'
+
 shmock        = require 'shmock'
 request       = require 'request'
 enableDestroy = require 'server-destroy'
@@ -50,8 +53,6 @@ describe 'Create Deployment', ->
 
   describe 'On POST /deployments/owner_name/repo_name/tag', ->
     beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
-
       options =
         uri: '/deployments/the-owner/the-service/v1.0.0'
         baseUrl: "http://localhost:#{@serverPort}"

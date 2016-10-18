@@ -22,6 +22,19 @@ class DeploymentService
       data = JSON.stringify { type, body, owner_name, repo_name }
       @redis.lpush 'webhooks', data, callback
 
+  getByTag: ({ owner_name, repo_name, tag }, callback) =>
+    query =
+      $query: {
+        owner_name
+        repo_name
+        tag
+      }
+
+    @datastore.findOne query, {'_id': false}, (error, record) =>
+      return callback error if error?
+      return callback @_createError 404, 'Deployment Not Found' unless record?
+      callback null, record
+
   getLatest: ({ owner_name, repo_name }, callback) =>
     query =
       $query: {
