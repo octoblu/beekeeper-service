@@ -1,3 +1,5 @@
+_ = require 'lodash'
+
 class DeploymentService
   constructor: ({ @db, @redis }) ->
     @datastore = @db.deployments
@@ -37,20 +39,16 @@ class DeploymentService
 
   getLatest: ({ owner_name, repo_name }, callback) =>
     query =
-      $query: {
-        docker_url:
-          $exists: true
-        ci_passing: true
-        owner_name
-        repo_name
-      }
-      $orderby:
-        created_at: -1
+      docker_url:
+        $exists: true
+      ci_passing: true
+      owner_name: owner_name
+      repo_name: repo_name
 
-    @datastore.findOne query, {'_id': false}, (error, record) =>
+    @datastore.find(query, _id: false).sort(created_at: -1).limit 1, (error, records) =>
       return callback error if error?
-      return callback @_createError 404, 'Deployment Not Found' unless record?
-      callback null, record
+      return callback @_createError 404, 'Deployment Not Found' if _.isEmpty records
+      callback null, _.first(records)
 
   _createError: (code, message) =>
     error = new Error message

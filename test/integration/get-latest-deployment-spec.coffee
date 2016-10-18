@@ -2,6 +2,7 @@
 {expect}      = require 'chai'
 sinon         = require 'sinon'
 
+moment        = require 'moment'
 shmock        = require 'shmock'
 request       = require 'request'
 enableDestroy = require 'server-destroy'
@@ -65,7 +66,7 @@ describe 'Get Latest Deployment', ->
           done error
 
       it 'should return a 200', ->
-        expect(@response.statusCode).to.equal 200
+        expect(@response.statusCode).to.equal 200, JSON.stringify(@body)
 
       it 'should return my record', ->
         expect(@body).to.containSubset some_deployment: 1.87
@@ -82,3 +83,43 @@ describe 'Get Latest Deployment', ->
 
       it 'should return a 404', ->
         expect(@response.statusCode).to.equal 404
+
+    context 'when two deployments exist', ->
+      beforeEach (done) ->
+        record =
+          owner_name: 'the-owner'
+          repo_name: 'the-service'
+          tag: 'v1.0.0'
+          docker_url: 'the-owner/the-service:v1.0.0'
+          ci_passing: true
+          created_at: moment.utc().subtract(1, 'hour').toDate()
+          some_deployment: 1.87
+
+        @deployments.insert record, done
+
+      beforeEach (done) ->
+        record =
+          owner_name: 'the-owner'
+          repo_name: 'the-service'
+          tag: 'v2.0.0'
+          docker_url: 'the-owner/the-service:v2.0.0'
+          ci_passing: true
+          created_at: moment.utc().toDate()
+          some_deployment: 1.87
+
+        @deployments.insert record, done
+
+      beforeEach (done) ->
+        options =
+          uri: '/deployments/the-owner/the-service/latest'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json: true
+
+        request.get options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 200', ->
+        expect(@response.statusCode).to.equal 200, JSON.stringify(@body)
+
+      it 'should return the v2.0.0 record', ->
+        expect(@body).to.containSubset tag: 'v2.0.0'
