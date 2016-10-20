@@ -1,30 +1,33 @@
 enableDestroy     = require 'server-destroy'
 octobluExpress    = require 'express-octoblu'
 express           = require 'express'
-MeshbluAuth       = require 'express-meshblu-auth'
 Router            = require './router'
 WebhookService    = require './services/webhook-service'
 DeploymentService = require './services/deployment-service'
-debug             = require('debug')('beekeeper-service:server')
+AuthService       = require './services/auth-service'
 mongojs           = require 'mongojs'
 Redis             = require 'ioredis'
 RedisNS           = require '@octoblu/redis-ns'
+debug             = require('debug')('beekeeper-service:server')
 
 class Server
   constructor: (options={})->
     {
       @logFn
-      @disableLogging
       @port
-      @meshbluConfig
       @mongodbUri
       @redisNamespace
       @redisUri
+      @username
+      @password
+      @disableTravisAuth
+      @disableLogging
     } = options
-    throw new Error 'Server requires: meshbluConfig' unless @meshbluConfig?
     throw new Error 'Server requires: mongodbUri' unless @mongodbUri?
     throw new Error 'Server requires: redisUri' unless @redisUri?
     throw new Error 'Server requires: redisNamespace' unless @redisNamespace?
+    throw new Error 'Server requires: username' unless @username?
+    throw new Error 'Server requires: password' unless @password?
 
   address: =>
     @server.address()
@@ -32,11 +35,10 @@ class Server
   run: (callback) =>
     app = octobluExpress({ @logFn, @disableLogging })
 
-    meshbluAuth = new MeshbluAuth @meshbluConfig
     app.use express.static 'public'
 
-    # app.use meshbluAuth.auth()
-    # app.use meshbluAuth.gateway()
+    authService = new AuthService { @username, @password, @disableTravisAuth }
+    app.use authService.auth({ travisPath: '/webhooks/travis:ci' })
 
     db = mongojs @mongodbUri, ['deployments']
     client = new Redis @redisUri, dropBufferSupport: true

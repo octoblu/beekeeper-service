@@ -1,16 +1,15 @@
 _             = require 'lodash'
-MeshbluConfig = require 'meshblu-config'
 Server        = require './src/server'
 
 class Command
   constructor: ->
     @serverOptions = {
-      meshbluConfig:  new MeshbluConfig().toJSON()
       port:           process.env.PORT || 80
-      disableLogging: process.env.DISABLE_LOGGING == "true"
       mongodbUri:     process.env.MONGODB_URI
       redisNamespace: process.env.REDIS_NAMESPACE || 'beekeeper'
       redisUri:       process.env.REDIS_URI
+      username:       process.env.USERNAME
+      password:       process.env.PASSWORD
     }
 
   panic: (error) =>
@@ -20,7 +19,8 @@ class Command
   run: =>
     @panic new Error('Missing required environment variable: MONGODB_URI') if _.isEmpty @serverOptions.mongodbUri
     @panic new Error('Missing required environment variable: REDIS_URI') if _.isEmpty @serverOptions.redisUri
-    # @panic new Error('Missing meshbluConfig') if _.isEmpty @serverOptions.meshbluConfig
+    @panic new Error('Missing required environment variable: USERNAME') if _.isEmpty @serverOptions.username
+    @panic new Error('Missing required environment variable: PASSWORD') if _.isEmpty @serverOptions.password
 
     server = new Server @serverOptions
     server.run (error) =>

@@ -2,9 +2,7 @@
 {expect}      = require 'chai'
 sinon         = require 'sinon'
 
-shmock        = require 'shmock'
 request       = require 'request'
-enableDestroy = require 'server-destroy'
 Server        = require '../../src/server'
 Redis         = require 'ioredis'
 RedisNS       = require '@octoblu/redis-ns'
@@ -24,22 +22,15 @@ describe 'Create Deployment', ->
     db.deployments.remove done
 
   beforeEach (done) ->
-    @meshblu = shmock 0xd00d
-    enableDestroy @meshblu
-
     @logFn = sinon.spy()
     serverOptions =
       port: undefined,
-      disableLogging: true
       logFn: @logFn
       mongodbUri: 'test-beekeeper-service'
       redisUri: 'localhost'
       redisNamespace: 'test-beekeeper'
-      meshbluConfig:
-        hostname: 'localhost'
-        protocol: 'http'
-        resolveSrv: false
-        port: 0xd00d
+      username: 'the-username'
+      password: 'the-password'
 
     @server = new Server serverOptions
 
@@ -48,7 +39,6 @@ describe 'Create Deployment', ->
       done()
 
   afterEach ->
-    @meshblu.destroy()
     @server.destroy()
 
   describe 'On POST /deployments/owner_name/repo_name/tag', ->
@@ -56,13 +46,16 @@ describe 'Create Deployment', ->
       options =
         uri: '/deployments/the-owner/the-service/v1.0.0'
         baseUrl: "http://localhost:#{@serverPort}"
+        auth:
+          username: 'the-username'
+          password: 'the-password'
         json: true
 
       request.post options, (error, @response, @body) =>
         done error
 
     it 'should return a 201', ->
-      expect(@response.statusCode).to.equal 201
+      expect(@response.statusCode).to.equal 201, @body
 
     it 'should insert the deployment into the database', (done) ->
       @deployments.findOne owner_name: 'the-owner', repo_name: 'the-service', tag: 'v1.0.0', (error, record) =>

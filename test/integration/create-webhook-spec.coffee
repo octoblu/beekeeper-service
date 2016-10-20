@@ -2,9 +2,7 @@
 {expect}      = require 'chai'
 sinon         = require 'sinon'
 
-shmock        = require 'shmock'
 request       = require 'request'
-enableDestroy = require 'server-destroy'
 Server        = require '../../src/server'
 Redis         = require 'ioredis'
 RedisNS       = require '@octoblu/redis-ns'
@@ -18,9 +16,6 @@ describe 'Webhooks', ->
       @redis.del 'webhooks', done
 
   beforeEach (done) ->
-    @meshblu = shmock 0xd00d
-    enableDestroy @meshblu
-
     @logFn = sinon.spy()
     serverOptions =
       port: undefined,
@@ -29,11 +24,8 @@ describe 'Webhooks', ->
       mongodbUri: 'test-beekeeper-service'
       redisUri: 'localhost'
       redisNamespace: 'test-beekeeper'
-      meshbluConfig:
-        hostname: 'localhost'
-        protocol: 'http'
-        resolveSrv: false
-        port: 0xd00d
+      username: 'the-username'
+      password: 'the-password'
 
     @server = new Server serverOptions
 
@@ -42,7 +34,6 @@ describe 'Webhooks', ->
       done()
 
   afterEach ->
-    @meshblu.destroy()
     @server.destroy()
 
   describe 'On POST /webhooks/beekeeper.io', ->
@@ -51,6 +42,9 @@ describe 'Webhooks', ->
         uri: '/webhooks/beekeeper.io'
         baseUrl: "http://localhost:#{@serverPort}"
         json: blah: 'blah'
+        auth:
+          username: 'the-username'
+          password: 'the-password'
 
       request.post options, (error, @response, @body) =>
         done error
@@ -72,6 +66,9 @@ describe 'Webhooks', ->
         uri: '/webhooks/something:else/foo/blah'
         baseUrl: "http://localhost:#{@serverPort}"
         json: blah: 'blah'
+        auth:
+          username: 'the-username'
+          password: 'the-password'
 
       request.post options, (error, @response, @body) =>
         done error
@@ -95,6 +92,9 @@ describe 'Webhooks', ->
         uri: '/webhooks/something:else/foo/blah'
         baseUrl: "http://localhost:#{@serverPort}"
         json: payload: JSON.stringify blah: 'blah'
+        auth:
+          username: 'the-username'
+          password: 'the-password'
 
       request.post options, (error, @response, @body) =>
         done error

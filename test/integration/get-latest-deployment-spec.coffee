@@ -3,9 +3,7 @@
 sinon         = require 'sinon'
 
 moment        = require 'moment'
-shmock        = require 'shmock'
 request       = require 'request'
-enableDestroy = require 'server-destroy'
 Server        = require '../../src/server'
 mongojs       = require 'mongojs'
 
@@ -16,9 +14,6 @@ describe 'Get Latest Deployment', ->
     db.deployments.remove done
 
   beforeEach (done) ->
-    @meshblu = shmock 0xd00d
-    enableDestroy @meshblu
-
     @logFn = sinon.spy()
     serverOptions =
       port: undefined,
@@ -27,11 +22,8 @@ describe 'Get Latest Deployment', ->
       mongodbUri: 'test-beekeeper-service'
       redisUri: 'localhost'
       redisNamespace: 'test-beekeeper'
-      meshbluConfig:
-        hostname: 'localhost'
-        protocol: 'http'
-        resolveSrv: false
-        port: 0xd00d
+      username: 'the-username'
+      password: 'the-password'
 
     @server = new Server serverOptions
 
@@ -40,7 +32,6 @@ describe 'Get Latest Deployment', ->
       done()
 
   afterEach ->
-    @meshblu.destroy()
     @server.destroy()
 
   describe 'On GET /deployments/:owner_name/:repo_name/latest', ->
@@ -61,6 +52,9 @@ describe 'Get Latest Deployment', ->
           uri: '/deployments/the-owner/the-service/latest'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
 
         request.get options, (error, @response, @body) =>
           done error
@@ -77,6 +71,10 @@ describe 'Get Latest Deployment', ->
           uri: '/deployments/the-owner/the-service/latest'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
+
 
         request.get options, (error, @response, @body) =>
           done error
@@ -114,6 +112,9 @@ describe 'Get Latest Deployment', ->
           uri: '/deployments/the-owner/the-service/latest'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
 
         request.get options, (error, @response, @body) =>
           done error

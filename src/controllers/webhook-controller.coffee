@@ -2,7 +2,7 @@ class WebhookController
   constructor: ({@webhookService}) ->
     throw new Error 'Missing webhookService' unless @webhookService?
 
-  create: (req, res) =>
+  create: (req, res, next) =>
     { type, owner_name, repo_name } = req.params
     body = req.body
     if body.payload?

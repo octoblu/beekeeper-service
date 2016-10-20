@@ -2,9 +2,7 @@
 {expect}      = require 'chai'
 sinon         = require 'sinon'
 
-shmock        = require 'shmock'
 request       = require 'request'
-enableDestroy = require 'server-destroy'
 Server        = require '../../src/server'
 mongojs       = require 'mongojs'
 
@@ -15,9 +13,6 @@ describe 'Get Deployment', ->
     db.deployments.remove done
 
   beforeEach (done) ->
-    @meshblu = shmock 0xd00d
-    enableDestroy @meshblu
-
     @logFn = sinon.spy()
     serverOptions =
       port: undefined,
@@ -26,11 +21,8 @@ describe 'Get Deployment', ->
       mongodbUri: 'test-beekeeper-service'
       redisUri: 'localhost'
       redisNamespace: 'test-beekeeper'
-      meshbluConfig:
-        hostname: 'localhost'
-        protocol: 'http'
-        resolveSrv: false
-        port: 0xd00d
+      username: 'the-username'
+      password: 'the-password'
 
     @server = new Server serverOptions
 
@@ -39,7 +31,6 @@ describe 'Get Deployment', ->
       done()
 
   afterEach ->
-    @meshblu.destroy()
     @server.destroy()
 
   describe 'On GET /deployments/:owner_name/:repo_name/:tag', ->
@@ -60,6 +51,9 @@ describe 'Get Deployment', ->
           uri: '/deployments/the-owner/the-service/v1.0.0'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
 
         request.get options, (error, @response, @body) =>
           done error
@@ -76,6 +70,9 @@ describe 'Get Deployment', ->
           uri: '/deployments/the-owner/the-service/v3.4.5'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
 
         request.get options, (error, @response, @body) =>
           done error
