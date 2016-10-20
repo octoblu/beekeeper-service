@@ -1,6 +1,6 @@
 {
   "name": "beekeeper-service",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "beekeeper-service an Octoblu Service",
   "keywords": [
     "Octoblu",
@@ -33,7 +33,6 @@
     "mocha-osx-reporter": "^0.1.2",
     "moment": "^2.15.1",
     "nyc": "^8.3.0",
-    "request": "^2.74.0",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0"
   },
@@ -46,6 +45,7 @@
     "ioredis": "^2.4.0",
     "lodash": "^4.15.0",
     "mongojs": "^2.4.0",
+    "request": "^2.75.0",
     "server-destroy": "^1.0.1"
   },
   "license": "MIT",
