@@ -11,31 +11,36 @@ class TravisAuthService
   auth: (request, response, next) =>
     debug 'auth both'
     return next() if @disableTravisAuth
-    @_authOrg request, response, (error) =>
-      return next(error) if error?
-      @_authPro request, response, next
-
-  _authPro: (request, response, next) =>
-    debug 'auth pro'
-    @_getProPublicKey @_handleResponse request, response, next
-
-  _authOrg: (request, response, next) =>
-    debug 'auth org'
-    @_getOrgPublicKey @_handleResponse request, response, next
-
-  _handleResponse: (request, response, next) =>
-    return (error, pub) =>
-      debug 'got publicKey', { error, gotPublicKey: pub? }
+    payload = request.body?.payload
+    signature = request.get 'Signature'
+    @_authOrg { payload, signature }, (error, orgVerified) =>
       return response.sendError error if error?
-      payload = request.body?.payload
-      signature = request.get 'Signature'
-      debug 'verifying', { payload, signature }
-      return response.sendStatus(401) unless signature?
-      return response.sendStatus(401) unless payload?
-      verified = @_verifySignature payload, signature, pub
-      debug 'is', { verified }
-      return response.sendStatus(401) unless verified
-      next()
+      debug 'orgVerified', orgVerified
+      return next() if orgVerified
+      @_authPro { payload, signature }, (error, proVerified) =>
+        return response.sendError error if error?
+        debug 'proVerified', proVerified
+        return next() if proVerified
+        response.sendStatus(401)
+
+  _authPro: ({ payload, signature }, callback) =>
+    debug 'auth pro'
+    @_getProPublicKey (error, pub) =>
+      return callback error if error?
+      @_verify { pub, payload, signature }, callback
+
+  _authOrg: ({ payload, signature }, callback) =>
+    debug 'auth org'
+    @_getOrgPublicKey (error, pub) =>
+      return callback error if error?
+      @_verify { pub, payload, signature }, callback
+
+  _verify: ({ pub, payload, signature }, callback) =>
+    debug 'got publicKey', { gotPublicKey: pub? }
+    debug 'verifying', { payload, signature }
+    return callback null, false unless signature?
+    return callback null, false unless payload?
+    callback null, @_verifySignature payload, signature, pub
 
   _verifySignature: (payload, signature, pub) =>
     verify = crypto.createVerify 'SHA1'

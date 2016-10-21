@@ -14,9 +14,9 @@ class AuthService
     throw new Error 'Missing travisPath for travis auth' unless travisPath?
     debug 'travis path', travisPath
     return (request, response, next) =>
-      debug 'request.path', request.path
+      debug 'request.path',    request.path
       debug 'request.headers', request.headers
-      debug 'request.params', request.params
+      debug 'request.params',  request.params
       return @travisAuthService.auth(request, response, next) if request.path == travisPath
       @basicAuth(request, response, next)
 

@@ -4,12 +4,12 @@ Server        = require './src/server'
 class Command
   constructor: ->
     @serverOptions = {
-      port:           process.env.PORT || 80
-      mongodbUri:     process.env.MONGODB_URI
-      redisNamespace: process.env.REDIS_NAMESPACE || 'beekeeper'
-      redisUri:       process.env.REDIS_URI
-      username:       process.env.USERNAME
-      password:       process.env.PASSWORD
+      port:              process.env.PORT || 80
+      mongodbUri:        process.env.MONGODB_URI
+      redisNamespace:    process.env.REDIS_NAMESPACE || 'beekeeper'
+      redisUri:          process.env.REDIS_URI
+      username:          process.env.USERNAME
+      password:          process.env.PASSWORD
       disableTravisAuth: process.env.DISABLE_TRAVIS_AUTH == 'true'
     }
 
