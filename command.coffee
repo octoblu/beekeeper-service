@@ -10,6 +10,7 @@ class Command
       redisUri:       process.env.REDIS_URI
       username:       process.env.USERNAME
       password:       process.env.PASSWORD
+      disableTravisAuth: process.env.DISABLE_TRAVIS_AUTH == 'true'
     }
 
   panic: (error) =>
