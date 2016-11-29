@@ -13,6 +13,7 @@ class Router
     app.get  '/deployments/:owner_name/:repo_name/latest', deploymentController.getLatest
     app.post '/deployments/:owner_name/:repo_name/:tag', deploymentController.create
     app.get  '/deployments/:owner_name/:repo_name/:tag', deploymentController.getByTag
+    app.delete '/deployments/:owner_name/:repo_name/:tag', deploymentController.delete
 
     app.post '/webhooks/:type', webhookController.create
     app.post '/webhooks/:type/:owner_name/:repo_name', webhookController.create

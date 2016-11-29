@@ -24,6 +24,15 @@ class DeploymentService
       data = JSON.stringify { type, body, owner_name, repo_name }
       @redis.lpush 'webhooks', data, callback
 
+  delete: ({ owner_name, repo_name, tag }, callback) =>
+    record = {
+      owner_name
+      repo_name
+      docker_url: "#{owner_name}/#{repo_name}:#{tag}"
+    }
+
+    @datastore.remove record, {multi:true}, callback
+
   getByTag: ({ owner_name, repo_name, tag }, callback) =>
     query =
       $query: {
