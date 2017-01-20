@@ -12,6 +12,7 @@ class Router
 
     app.get  '/deployments/:owner_name/:repo_name/latest', deploymentController.getLatest
     app.post '/deployments/:owner_name/:repo_name/:tag', deploymentController.create
+    app.patch '/deployments/:owner_name/:repo_name/:tag', deploymentController.update
     app.get  '/deployments/:owner_name/:repo_name/:tag', deploymentController.getByTag
     app.delete '/deployments/:owner_name/:repo_name/:tag', deploymentController.delete
 

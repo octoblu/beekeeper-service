@@ -29,6 +29,13 @@ class DeploymentController
     @deploymentService.getLatest { owner_name, repo_name }, (error, deployment) =>
       return res.sendError(error) if error?
       res.status(200).send(deployment)
-
+    
+  update: (req, res) =>
+    { owner_name, repo_name, tag } = req.params
+    { docker_url } = req.body
+    return res.status(422).send error: 'Missing docker_url in body' unless docker_url?
+    @deploymentService.update { owner_name, repo_name, tag, docker_url }, (error) =>
+      return res.sendError(error) if error?
+      res.sendStatus(204)
 
 module.exports = DeploymentController

@@ -58,6 +58,18 @@ class DeploymentService
       return callback error if error?
       return callback @_createError 404, 'Deployment Not Found' if _.isEmpty records
       callback null, _.first(records)
+  
+  update: ({ docker_url, owner_name, repo_name, tag }, callback) =>
+    query = {
+      owner_name
+      repo_name
+      tag
+    }
+    @datastore.count query, (error, count) =>
+      return callback error if error?
+      return callback @_createError 404, 'Deployment Not Found' if count == 0
+      return callback @_createError 417, 'Multiple deployments found' if count > 1
+      @datastore.update query, { $set: { docker_url } }, callback
 
   _createError: (code, message) =>
     error = new Error message
