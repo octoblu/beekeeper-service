@@ -1,6 +1,5 @@
 enableDestroy     = require 'server-destroy'
 octobluExpress    = require 'express-octoblu'
-express           = require 'express'
 Router            = require './router'
 WebhookService    = require './services/webhook-service'
 DeploymentService = require './services/deployment-service'
@@ -34,8 +33,6 @@ class Server
 
   run: (callback) =>
     app = octobluExpress({ @logFn, @disableLogging })
-
-    app.use express.static 'public'
 
     authService = new AuthService { @username, @password, @disableTravisAuth }
     app.use authService.auth({ travisPath: '/webhooks/travis:ci' })
