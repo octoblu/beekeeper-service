@@ -1,7 +1,7 @@
 class WebhookService
   constructor: ({@redis}) ->
 
-  create: ({type, owner_name, repo_name, body}, callback) =>
+  create: ({ type, owner_name, repo_name, body }, callback) =>
     data = JSON.stringify { type, body, owner_name, repo_name }
     @redis.lpush 'webhooks', data, callback
 
