@@ -64,6 +64,71 @@ describe 'Get Deployment', ->
       it 'should return my record', ->
         expect(@body).to.containSubset some_deployment: 1.87
 
+    context 'when a deployment exists with valid tags', ->
+      beforeEach (done) ->
+        record =
+          owner_name: 'the-owner'
+          repo_name: 'the-service'
+          tag: 'v1.0.0'
+          ci_passing: false
+          created_at: new Date()
+          some_deployment: 1.87
+          tags: [
+            'valid-tag'
+            'another-valid-tag'
+          ]
+
+        @deployments.insert record, done
+
+      beforeEach (done) ->
+        options =
+          uri: '/deployments/the-owner/the-service/v1.0.0?tags=valid-tag,another-valid-tag'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
+
+        request.get options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 200', ->
+        expect(@response.statusCode).to.equal 200
+
+      it 'should return my record', ->
+        expect(@body).to.containSubset some_deployment: 1.87
+
+
+    context 'when a deployment exists with invalid tags', ->
+      beforeEach (done) ->
+        record =
+          owner_name: 'the-owner'
+          repo_name: 'the-service'
+          tag: 'v1.0.0'
+          ci_passing: false
+          created_at: new Date()
+          some_deployment: 1.87
+          tags: [
+            'invalid-tag'
+          ]
+
+        @deployments.insert record, done
+
+      beforeEach (done) ->
+        options =
+          uri: '/deployments/the-owner/the-service/v1.0.0?tags=valid-tag'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
+
+        request.get options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 404', ->
+        expect(@response.statusCode).to.equal 404
+
     context 'when a deployment does not exist', ->
       beforeEach (done) ->
         options =
