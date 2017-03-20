@@ -93,11 +93,43 @@ describe 'Get Deployment', ->
           done error
 
       it 'should return a 200', ->
-        expect(@response.statusCode).to.equal 200
+        expect(@response.statusCode).to.equal 200, JSON.stringify(@body, null, 2)
 
       it 'should return my record', ->
         expect(@body).to.containSubset some_deployment: 1.87
 
+    context 'when a deployment exists with a tag but no tags are specified', ->
+      beforeEach (done) ->
+        record =
+          owner_name: 'the-owner'
+          repo_name: 'the-service'
+          tag: 'v1.0.0'
+          ci_passing: false
+          created_at: new Date()
+          some_deployment: 1.87
+          tags: [
+            'some-tag'
+          ]
+
+        @deployments.insert record, done
+
+      beforeEach (done) ->
+        options =
+          uri: '/deployments/the-owner/the-service/v1.0.0'
+          baseUrl: "http://localhost:#{@serverPort}"
+          json: true
+          auth:
+            username: 'the-username'
+            password: 'the-password'
+
+        request.get options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 200', ->
+        expect(@response.statusCode).to.equal 200, JSON.stringify(@body)
+
+      it 'should return my record', ->
+        expect(@body).to.containSubset some_deployment: 1.87
 
     context 'when a deployment exists with invalid tags', ->
       beforeEach (done) ->

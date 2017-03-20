@@ -34,8 +34,8 @@ class DeploymentService
     @datastore.remove record, {multi:true}, callback
 
   getByTag: ({ owner_name, repo_name, tag, tags }, callback) =>
-    tags = tags?.split /,/
-    tags = [tags] unless _.isArray tags
+    tags = @_getTagsQuery tags
+    
     query =
       $query: {
         owner_name
@@ -51,8 +51,7 @@ class DeploymentService
       callback null, record
 
   getLatest: ({ owner_name, repo_name, tags }, callback) =>
-    tags = tags?.split /,/
-    tags = [tags] unless _.isArray tags
+    tags = @_getTagsQuery tags
     query =
       docker_url:
         $exists: true
@@ -90,6 +89,10 @@ class DeploymentService
       return callback @_createError 404, 'Deployment Not Found' if count == 0
       return callback @_createError 417, 'Multiple deployments found' if count > 1
       @datastore.update query, { $addToSet: { 'tags': tagName.toLowerCase() } }, callback
+
+  _getTagsQuery: (tags) =>
+    tags = tags?.split /,/
+    return _.compact _.castArray tags
 
   _createError: (code, message) =>
     error = new Error message
