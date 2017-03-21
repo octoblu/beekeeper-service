@@ -44,7 +44,7 @@ describe 'Create Deployment', ->
   describe 'On POST /deployments/owner_name/repo_name/tag', ->
     beforeEach (done) ->
       options =
-        uri: '/deployments/the-owner/the-service/v1.0.0'
+        uri: '/deployments/the-Owner/the-service/v1.0.0'
         baseUrl: "http://localhost:#{@serverPort}"
         auth:
           username: 'the-username'

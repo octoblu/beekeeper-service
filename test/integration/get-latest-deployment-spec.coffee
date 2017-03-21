@@ -49,7 +49,7 @@ describe 'Get Latest Deployment', ->
 
       beforeEach (done) ->
         options =
-          uri: '/deployments/the-owner/the-service/latest'
+          uri: '/deployments/the-owner/the-serVice/latest'
           baseUrl: "http://localhost:#{@serverPort}"
           json: true
           auth:

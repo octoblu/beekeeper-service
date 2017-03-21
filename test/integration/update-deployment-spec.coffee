@@ -50,7 +50,7 @@ describe 'Update Deployment', ->
 
       beforeEach (done) ->
         options =
-          uri: '/deployments/the-owner/the-service/v1.0.0'
+          uri: '/deployments/the-owner/the-SERVice/v1.0.0'
           baseUrl: "http://localhost:#{@serverPort}"
           auth:
             username: 'the-username'
@@ -121,7 +121,7 @@ describe 'Update Deployment', ->
       beforeEach (done) ->
         record = { owner_name: 'the-owner', repo_name: 'the-service', tag: 'v1.0.0' }
         @deployments.insert record, done
-      
+
       beforeEach (done) ->
         record = { owner_name: 'the-owner', repo_name: 'the-service', tag: 'v1.0.0' }
         @deployments.insert record, done
