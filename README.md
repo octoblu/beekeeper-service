@@ -9,20 +9,31 @@
 # Table of Contents
 
 * [Introduction](#introduction)
+  * [What is Beekeeper](#what-is-beekeeper)
+  * [Related Projects](#related-projects)
 * [Getting Started](#getting-started)
   * [Install](#install)
-* [Usage](#usage)
-  * [Default](#default)
+  * [Start](#start)
+  * [Run Tests](#run-tests)
   * [Docker](#docker)
-    * [Development](#development)
-    * [Production](#production)
-  * [Debugging](#debugging)
-  * [Test](#test)
 * [License](#license)
 
 # Introduction
 
-...
+## What is Beekeeper
+
+Beekeeper is centralized deployment manager and tracking tool.
+
+Works with [hub.docker.com](https://hub.docker.com), [codefresh.io](https://codefresh.io), and [travis-ci](https://travis-ci.org).
+
+## Related Projects
+
+* [beekeeper-util](https://gitub.com/octoblu/beekeeper-util)
+* [beekeeper-worker](https://gitub.com/octoblu/beekeeper-worker)
+* [beekeeper-updater-swarm](https://gitub.com/octoblu/beekeeper-updater-swarm)
+* [beekeeper-updater-docker-compose](https://github.com/octoblu/beekeeper-updater-docker-compose)
+* [beekeeper-updater-docker-stack](https://github.com/octoblu/beekeeper-updater-docker-stack)
+* [gump](https://github.com/octoblu/unix-dev-tools-gump)
 
 # Getting Started
 
@@ -34,44 +45,27 @@ cd /path/to/beekeeper-service
 npm install
 ```
 
-# Usage
-
-## Default
+## Start
 
 ```javascript
-node command.js
+yarn start
 ```
 
-## Docker 
+## Run Tests
 
-### Development
-
-```bash
-docker build -t local/beekeeper-service .
-docker run --rm -it --name beekeeper-service-local -p 8888:80 local/beekeeper-service
+```javascript
+yarn test
 ```
 
-### Production
+## Docker
 
 ```bash
-docker pull quay.io/octoblu/beekeeper-service
-docker run --rm -p 8888:80 quay.io/octoblu/beekeeper-service
-```
-
-## Debugging
-
-```bash
-env DEBUG='beekeeper-service*' node command.js
-```
-
-```bash
-env DEBUG='beekeeper-service*' node command.js
-```
-
-## Test 
-
-```bash
-npm test
+docker run --rm \
+  --env 'MONGODB_URI=<mongodb-uri>' \
+  --env 'REDIS_URI=<redis-uri>' \
+  --env 'USERNAME=<beekeeper-username>' \
+  --env 'PASSWORD=<beekeeper-password>' \
+  octoblu/beekeeper-service
 ```
 
 ## License
